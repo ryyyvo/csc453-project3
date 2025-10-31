@@ -1,11 +1,38 @@
 1. what is backing_store for?
 
+
+
 2. get the logical address, use bit shifting to get the page number from first 8 bits and then 
     offset from the last 8 bits ? (ask if correct)
 
+
+
 3. how are we supposed to populate the page table and frame number?
+
+
 
 4. what do we do when there is a page fault?
 
+
+
 5. what do the values in the addresses_correct mean?
+
+backing_store.bin is all the contents that youd read/move from main memory
+
+program flow?
+
+get page number -> get first address ex: from page 5 to frame 0 
+frames will get populated as you read from the pages 
+
+get offset, page number, and then fill out the frame number, then use backing_store 
+to get the memory at the pag
+
+tlb miss initially cause nothing's in it
+
+
+let's say page number is not in the page table, then put into page table and assign frame number ?
+
+access backing_store.bin and 
+
+if you dont find space cause little frames, then you use page replacement algorithm
 
