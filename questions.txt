@@ -1,0 +1,11 @@
+1. what is backing_store for?
+
+2. get the logical address, use bit shifting to get the page number from first 8 bits and then 
+    offset from the last 8 bits ? (ask if correct)
+
+3. how are we supposed to populate the page table and frame number?
+
+4. what do we do when there is a page fault?
+
+5. what do the values in the addresses_correct mean?
+
