@@ -44,6 +44,19 @@ def fifo_page_table(queue_page_table,queue_tlb, page_num):
     queue_page_table.append((page_num, new_frame_num))
     return new_frame_num
 
+def optimal(queue_page_table,queue_tlb, page_num):
+    page_table_keys = []#all the page numbers in the page table
+    copy_SEQ = SEQ 
+    #ADDRESES_TRANS = index in SEQ that you are currently at
+    # start iterating through the rest of the list(for loop until you hit the end of copy_seq)
+    # remove whatever you encounter from PAGE_TABLE_KEYS 
+    
+    #use get_frame to find page number and frame tuple <= remove it from page_table_queue and queue_tlb
+    #get_frame_from_queue(page_table, page_num)
+    #add the new tuple to page table and tlb
+ 
+    
+
 
     
 
