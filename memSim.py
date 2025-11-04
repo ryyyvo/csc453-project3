@@ -15,6 +15,7 @@ SEQ = [] #all of them translated to their page number
 
 
 
+
 # tlb will be a queue of dictionaries
 
 # page number to frame number
@@ -44,21 +45,42 @@ def fifo_page_table(queue_page_table,queue_tlb, page_num):
     queue_page_table.append((page_num, new_frame_num))
     return new_frame_num
 
-def optimal(queue_page_table,queue_tlb, page_num):
-    page_table_keys = []#all the page numbers in the page table
-    copy_SEQ = SEQ 
-    #ADDRESES_TRANS = index in SEQ that you are currently at
-    # start iterating through the rest of the list(for loop until you hit the end of copy_seq)
-    # remove whatever you encounter from PAGE_TABLE_KEYS 
+def optimal(queue_page_table, queue_tlb, page_num):
+    global CURRENT_INDEX
     
-    #use get_frame to find page number and frame tuple <= remove it from page_table_queue and queue_tlb
-    #get_frame_from_queue(page_table, page_num)
-    #add the new tuple to page table and tlb
- 
+    page_table_keys = [page for page, frame in queue_page_table]
     
+    # find which page to replace 
+    farthest_use = -1
+    page_to_replace = None
+    
+    for page, frame in queue_page_table:
+        # look for the next occurrence of this page
+        next_use = None
+        for i in range(CURRENT_INDEX + 1, len(SEQ)):
+            if SEQ[i] == page:
+                next_use = i
+                break
+        
+        # if page is never used again, replace it
+        if next_use is None:
+            page_to_replace = (page, frame)
+            break
+        
+        # track the page that will be used farthest in the future
+        if next_use > farthest_use:
+            farthest_use = next_use
+            page_to_replace = (page, frame)
+    
+    queue_page_table.remove(page_to_replace)
+    if page_to_replace in queue_tlb:
+        queue_tlb.remove(page_to_replace)
+    
+    new_frame_num = page_to_replace[1]
 
-
+    queue_page_table.append((page_num, new_frame_num))
     
+    return new_frame_num
 
 
 def parse_args():
@@ -89,6 +111,7 @@ def parse_args():
 
 
 def main():
+    
     TLB_SIZE = 16
     NUM_PAGES = 256
     PAGE_SIZE = 256
@@ -100,7 +123,8 @@ def main():
     TLB_MISS=0
     PAGE_TABLE_MISS=0
     ADDS_TRANSLATED=0
-
+    CURRENT_INDEX = 0 # tracks current position in SEQ for optimal algorithm
+    
     #parser = argparse.ArgumentParser(description='memSim')
 
     #args = parser.parse_args()
@@ -119,7 +143,8 @@ def main():
     
 
   
-    for address in ADDS:
+    for idx, address in enumerate(ADDS):
+        CURRENT_INDEX = idx
         page_num, offset = get_page_and_offset(address)
         if not check_page_exist(TLB, page_num):
             if check_page_exist(PAGE_TABLE, page_num):
@@ -139,6 +164,8 @@ def main():
             else:
                 if DEFAULT_PRA == 'fifo':
                     new_frame = fifo_page_table(PAGE_TABLE, TLB, page_num)
+                elif DEFAULT_PRA == 'optimal':
+                    new_frame = optimal(PAGE_TABLE, TLB, page_num)
               
                     
             if TLB_COUNTER<TLB_SIZE:
