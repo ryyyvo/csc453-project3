@@ -78,15 +78,15 @@ def optimal(queue_page_table,queue_tlb, page_num):
 def parse_args():
     global ADDS, DEFAULT_FRAMES, DEFAULT_PRA
     # file name, frame number, page replacement algorithm
-    if len(sys.argv) == 4:
-        print("hi")
-        
-        with open('addresses.txt', 'r') as file:
+    with open('addresses.txt', 'r') as file:
             ADDS = [int(line.strip()) for line in file]
         
-        for i in range(len(ADDS)):
-            ADDS[i] = int(ADDS[i])
-        
+    for i in range(len(ADDS)):
+        ADDS[i] = int(ADDS[i])
+            
+    if len(sys.argv) == 4:
+        print("hi")
+    
         DEFAULT_FRAMES = int(sys.argv[2])
         DEFAULT_PRA = str(sys.argv[3])
     
