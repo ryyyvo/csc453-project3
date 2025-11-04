@@ -8,6 +8,7 @@ from collections import deque
 
 ADDS = [] #addresses from file
 SEQ = [] #all of them translated to their page number
+CURRENT_INDEX = 0 # tracks current position in SEQ for optimal algorithm
 
 # tlb will be a queue of dictionaries
 
@@ -102,7 +103,7 @@ def parse_args():
     return 0
 
 def main():
-    
+    global CURRENT_INDEX
     TLB_SIZE = 16
     NUM_PAGES = 256
     PAGE_SIZE = 256
@@ -114,7 +115,6 @@ def main():
     TLB_MISS=0
     PAGE_TABLE_MISS=0
     ADDS_TRANSLATED=0
-    CURRENT_INDEX = 0 # tracks current position in SEQ for optimal algorithm
     
     #parser = argparse.ArgumentParser(description='memSim')
 
