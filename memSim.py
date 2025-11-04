@@ -1,20 +1,13 @@
 import sys
 import argparse
-import numpy as np
 from queue import Queue
 from collections import deque
   
 
 # variable number of frames based off of args
 
-
-
-
 ADDS = [] #addresses from file
 SEQ = [] #all of them translated to their page number
-
-
-
 
 # tlb will be a queue of dictionaries
 
@@ -108,8 +101,6 @@ def parse_args():
         # if not num, set pra
     return 0
 
-
-
 def main():
     
     TLB_SIZE = 16
@@ -186,9 +177,6 @@ def main():
                 #call DEFAULT_PRA
         #adds_translated+=1
                 
-            
-        
-        
     
     #open addresses-correct.txt
     
@@ -201,18 +189,8 @@ def main():
     # if more: FIFO, LRU, OPTIMAL. frame_counter stays the same
      
      #at end of for loop put in address read, value in backingstore.bin, frame number, whole page from backingstore.bin
-    
-  
-    
-   
-    
-    
-    
-    
 
     return 0
-
-
 
 if __name__ == "__main__":
     # sys.exit(main())
