@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import argparse
 import numpy as np
@@ -10,10 +11,23 @@ from collections import deque
 
 
 
+
 ADDS = [] #addresses from file
 SEQ = [] #all of them translated to their page number
 
+DEFAULT_FRAMES = 256
+DEFAULT_PRA = 'fifo'
 
+TLB_SIZE = 16
+NUM_PAGES = 256
+PAGE_SIZE = 256
+PAGE_TABLE_SIZE = 256
+    
+FRAME_COUNTER = 0
+TLB_COUNTER=0
+TLB_MISS=0
+PAGE_TABLE_MISS=0
+ADDS_TRANSLATED=0
 
 # tlb will be a queue of dictionaries
 
@@ -62,19 +76,29 @@ def optimal(queue_page_table,queue_tlb, page_num):
 
 
 def parse_args():
+    global ADDS, DEFAULT_FRAMES, DEFAULT_PRA
     # file name, frame number, page replacement algorithm
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 4:
         print("hi")
         
         with open('addresses.txt', 'r') as file:
-            ADDS = file.readlines()
+            ADDS = [int(line.strip()) for line in file]
         
         for i in ADDS:
             ADDS[i] = int(ADDS[i])
         
-        DEFAULT_FRAMES = sys.argv[2]
-        DEFAULT_PRA = sys.argv[3]
+        DEFAULT_FRAMES = int(sys.argv[2])
+        DEFAULT_PRA = string(sys.argv[3])
     
+    elif len(sys.argv) == 3:
+        if isinstance(sys.argv[2],int):
+            DEFAULT_FRAMES = int(sys.argv[2])
+        else:
+            DEFAULT_PRA = string(sys.argv[2])
+    
+    print("frames", DEFAULT_FRAMES)
+    print("pra", DEFAULT_PRA)
+    print("adds", ADDS)
         
                     
         # open file name, store it as an array in ref_seq
@@ -89,21 +113,15 @@ def parse_args():
 
 
 def main():
-    TLB_SIZE = 16
-    NUM_PAGES = 256
-    PAGE_SIZE = 256
-    PAGE_TABLE_SIZE = 256
-    DEFAULT_FRAMES = 256
-    DEFAULT_PRA = 'fifo'
-    FRAME_COUNTER = 0
-    TLB_COUNTER=0
-    TLB_MISS=0
-    PAGE_TABLE_MISS=0
-    ADDS_TRANSLATED=0
+    global TLB_SIZE, NUM_PAGES, PAGE_SIZE,PAGE_TABLE_SIZE,FRAME_COUNTER,TLB_COUNTER,TLB_MISS,PAGE_TABLE_MISS,ADDS_TRANSLATED
+    
+    parse_args()
 
     #parser = argparse.ArgumentParser(description='memSim')
 
     #args = parser.parse_args()
+    
+    '''
     ADDS = [16916, 62493, 30198]
     #PAGE_TABLE = Queue()
     #TLB = Queue()
@@ -177,7 +195,7 @@ def main():
     
   
     
-   
+   '''
     
     
     
