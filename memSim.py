@@ -84,17 +84,18 @@ def parse_args():
         with open('addresses.txt', 'r') as file:
             ADDS = [int(line.strip()) for line in file]
         
-        for i in ADDS:
+        for i in range(len(ADDS)):
             ADDS[i] = int(ADDS[i])
         
         DEFAULT_FRAMES = int(sys.argv[2])
-        DEFAULT_PRA = string(sys.argv[3])
+        DEFAULT_PRA = str(sys.argv[3])
     
     elif len(sys.argv) == 3:
-        if isinstance(sys.argv[2],int):
+        #if isinstance(sys.argv[2],int):
+        if sys.argv[2].isdigit():
             DEFAULT_FRAMES = int(sys.argv[2])
         else:
-            DEFAULT_PRA = string(sys.argv[2])
+            DEFAULT_PRA = str(sys.argv[2])
     
     print("frames", DEFAULT_FRAMES)
     print("pra", DEFAULT_PRA)
