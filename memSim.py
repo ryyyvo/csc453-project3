@@ -122,8 +122,8 @@ def main():
 
     #args = parser.parse_args()
     
-    '''
-    ADDS = [16916, 62493, 30198]
+    
+    #ADDS = [16916, 62493, 30198]
     #PAGE_TABLE = Queue()
     #TLB = Queue()
     
@@ -151,8 +151,7 @@ def main():
             if FRAME_COUNTER<DEFAULT_FRAMES:
                 PAGE_TABLE.append((page_num, FRAME_COUNTER))
                 new_frame = FRAME_COUNTER
-                   
-                #next_frame_num = FRAME_COUNTER
+
                 FRAME_COUNTER+=1 
                      
             else:
@@ -196,7 +195,7 @@ def main():
     
   
     
-   '''
+  
     
     
     
