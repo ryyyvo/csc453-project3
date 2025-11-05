@@ -17,7 +17,7 @@ SEQ = [] #all of them translated to their page number
 
 DEFAULT_FRAMES = 256
 DEFAULT_PRA = 'fifo'
-
+PAGE_TO_FRAME_DICT = {}
 TLB_SIZE = 16
 NUM_PAGES = 256
 PAGE_SIZE = 256
@@ -111,6 +111,22 @@ def parse_args():
         # if not num, set pra
     return 0
 
+def read_page_from_backing_store(address, page_num):
+    
+    offset = page_num * PAGE_SIZE
+   
+    with open("BACKING_STORE.bin", "rb") as f:
+        f.seek(offset)
+        data = f.read(PAGE_SIZE)
+    return(data.hex().upper())
+
+def read_byte_from_backing_store(address, page_num):
+    offset = page_num * PAGE_SIZE
+    with open("BACKING_STORE.bin", "rb") as f:
+        f.seek(address)
+        data = f.read(1)
+    return(int.from_bytes(data, 'big'))
+
 
 
 def main():
@@ -118,15 +134,8 @@ def main():
     
     parse_args()
 
-    #parser = argparse.ArgumentParser(description='memSim')
-
-    #args = parser.parse_args()
     
-    
-    #ADDS = [16916, 62493, 30198]
-    #PAGE_TABLE = Queue()
-    #TLB = Queue()
-    
+    #have to make global...?
     PAGE_TABLE = []
     TLB = []
     
@@ -137,7 +146,7 @@ def main():
     print("sequence page numbers", SEQ)
     
 
-  
+    
     for address in ADDS:
         page_num, offset = get_page_and_offset(address)
         if not check_page_exist(TLB, page_num):
@@ -151,13 +160,14 @@ def main():
             if FRAME_COUNTER<DEFAULT_FRAMES:
                 PAGE_TABLE.append((page_num, FRAME_COUNTER))
                 new_frame = FRAME_COUNTER
+                PAGE_TO_FRAME_DICT[page_num] = new_frame
 
                 FRAME_COUNTER+=1 
                      
             else:
                 if DEFAULT_PRA == 'fifo':
                     new_frame = fifo_page_table(PAGE_TABLE, TLB, page_num)
-              
+                    PAGE_TO_FRAME_DICT[page_num] = new_frame
                     
             if TLB_COUNTER<TLB_SIZE:
                     TLB.append((page_num,new_frame))
@@ -174,31 +184,22 @@ def main():
     print("TLB", TLB)
     print("PAGE TABLE", PAGE_TABLE)
                 
-                #call DEFAULT_PRA
-        #adds_translated+=1
-                
-            
-        
-        
-    
-    #open addresses-correct.txt
-    
-    #loop through addresses in REF_SEQ = []
-    #for each one: 
-    # get page number and offset
-    # check tlb, if page number value is None check page table. if that value is also None
-    # check if frame counter is less than DEFAULT_FRAMES:
-    # if less: update that frame as the value for page table, and put it in TLB(may need to FIFO). frame_counter++
-    # if more: FIFO, LRU, OPTIMAL. frame_counter stays the same
-     
-     #at end of for loop put in address read, value in backingstore.bin, frame number, whole page from backingstore.bin
-    
-  
-    
-  
     
     
+    for index, value in enumerate(ADDS):
+        print(ADDS[index], end="")
+        print(", ", end="")
+        print(read_byte_from_backing_store(ADDS[index], SEQ[index]), end="")
+        print(", ", end="")
+        print(PAGE_TO_FRAME_DICT[SEQ[index]])
+        print(read_page_from_backing_store(ADDS[index], SEQ[index]))
     
+    print("Number of Translated Addresses = ", ADDS_TRANSLATED)
+    print("Page Faults = ", PAGE_TABLE_MISS)
+    print("Page Fault Rate = ??")
+    print("TLB Hits = ??")
+    print("TLB Misses = ", TLB_MISS)
+    print("TLB Hit Rate = ??")
     
 
     return 0
