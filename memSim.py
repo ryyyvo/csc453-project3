@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
 import sys
-import argparse
-from queue import Queue
-from collections import deque
-
-
-# variable number of frames based off of args
-
 
 ADDS = []  # addresses from file
 SEQ = []  # all of them translated to their page number
 CURRENT_INDEX = 0  # tracks current position in SEQ for optimal algorithm
 
 DEFAULT_FRAMES = 256
-DEFAULT_PRA = 'optimal'
+DEFAULT_PRA = 'fifo'
 PAGE_TO_FRAME_DICT = {}
 TLB_SIZE = 16
 NUM_PAGES = 256
@@ -26,6 +19,8 @@ TLB_COUNTER = 0
 TLB_MISS = 0
 PAGE_TABLE_MISS = 0
 ADDS_TRANSLATED = 0
+LAST_DEFAULT_FRAME_USED = -1
+
 
 # tlb will be a queue of dictionaries
 
@@ -63,6 +58,7 @@ def fifo_page_table(queue_page_table, queue_tlb, page_num):
 
 
 def optimal(queue_page_table, queue_tlb, page_num):
+    global LAST_DEFAULT_FRAME_USED
     global CURRENT_INDEX
     print("hhi")
 
@@ -92,6 +88,12 @@ def optimal(queue_page_table, queue_tlb, page_num):
         queue_tlb.remove(page_to_replace)
 
     new_frame_num = page_to_replace[1]
+    if new_frame_num == LAST_DEFAULT_FRAME_USED:
+        if (new_frame_num + 1) > DEFAULT_FRAMES:
+            new_frame_num = 0
+        else:
+            new_frame_num += 1
+    LAST_DEFAULT_FRAME_USED = new_frame_num
 
     queue_page_table.append((page_num, new_frame_num))
 
@@ -186,7 +188,6 @@ def main():
 
     parse_args()
 
-    # have to make global...?
     PAGE_TABLE = []
     TLB = []
 
@@ -260,5 +261,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # sys.exit(main())
     main()
