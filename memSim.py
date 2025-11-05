@@ -132,7 +132,7 @@ def lru(queue_page_table, queue_tlb, page_num):
 def parse_args():
     global ADDS, DEFAULT_FRAMES, DEFAULT_PRA
     # file name, frame number, page replacement algorithm
-    with open('addresses.txt', 'r') as file:
+    with open(sys.argv[1], 'r') as file:
         ADDS = [int(line.strip()) for line in file]
 
     for i in range(len(ADDS)):
@@ -256,6 +256,8 @@ def main():
     print("TLB Misses = ", TLB_MISS)
     print("TLB Hit Rate = ", TLB_HIT/ADDS_TRANSLATED)
 
+    print("-----")
+    print(PAGE_TO_FRAME_DICT)
     return 0
 
 
