@@ -14,9 +14,10 @@ from collections import deque
 
 ADDS = [] #addresses from file
 SEQ = [] #all of them translated to their page number
+CURRENT_INDEX = 0 # tracks current position in SEQ for optimal algorithm
 
 DEFAULT_FRAMES = 256
-DEFAULT_PRA = 'fifo'
+DEFAULT_PRA = 'optimal'
 PAGE_TO_FRAME_DICT = {}
 TLB_SIZE = 16
 NUM_PAGES = 256
@@ -59,17 +60,70 @@ def fifo_page_table(queue_page_table,queue_tlb, page_num):
     queue_page_table.append((page_num, new_frame_num))
     return new_frame_num
 
-def optimal(queue_page_table,queue_tlb, page_num):
-    page_table_keys = []#all the page numbers in the page table
-    copy_SEQ = SEQ 
-    #ADDRESES_TRANS = index in SEQ that you are currently at
-    # start iterating through the rest of the list(for loop until you hit the end of copy_seq)
-    # remove whatever you encounter from PAGE_TABLE_KEYS 
+def optimal(queue_page_table, queue_tlb, page_num):
+    global CURRENT_INDEX
+    print("hhi")
     
-    #use get_frame to find page number and frame tuple <= remove it from page_table_queue and queue_tlb
-    #get_frame_from_queue(page_table, page_num)
-    #add the new tuple to page table and tlb
- 
+    page_table_keys = [page for page, frame in queue_page_table]
+    
+    farthest_use = -1
+    page_to_replace = None
+    
+    for page, frame in queue_page_table:
+        # look for next occurrence of this page
+        next_use = None
+        for i in range(CURRENT_INDEX + 1, len(SEQ)):
+            if SEQ[i] == page:
+                next_use = i
+                break
+        
+        # if page is never used again, replace it
+        if next_use is None:
+            page_to_replace = (page, frame)
+            break
+        
+        # track page that will be used farthest in the future
+        if next_use > farthest_use:
+            farthest_use = next_use
+            page_to_replace = (page, frame)
+    
+    queue_page_table.remove(page_to_replace)
+    if page_to_replace in queue_tlb:
+        queue_tlb.remove(page_to_replace)
+    
+    new_frame_num = page_to_replace[1]
+
+    queue_page_table.append((page_num, new_frame_num))
+    
+    return new_frame_num
+
+def lru(queue_page_table, queue_tlb, page_num):
+    global CURRENT_INDEX
+    
+    least_recent_use = CURRENT_INDEX
+    page_to_replace = None
+    
+    for page, frame in queue_page_table:
+        last_use = -1
+        for i in range(CURRENT_INDEX - 1, -1, -1):
+            if SEQ[i] == page:
+                last_use = i
+                break
+
+        # track page that was used least recently
+        if last_use < least_recent_use:
+            least_recent_use = last_use
+            page_to_replace = (page, frame)
+    
+    queue_page_table.remove(page_to_replace)
+    if page_to_replace in queue_tlb:
+        queue_tlb.remove(page_to_replace)
+    
+    new_frame_num = page_to_replace[1]
+    
+    queue_page_table.append((page_num, new_frame_num))
+    
+    return new_frame_num
     
 
 
@@ -131,7 +185,7 @@ def read_byte_from_backing_store(address, page_num):
 
 
 def main():
-    global TLB_SIZE, NUM_PAGES, PAGE_SIZE,PAGE_TABLE_SIZE,FRAME_COUNTER,TLB_COUNTER,TLB_MISS,PAGE_TABLE_MISS,ADDS_TRANSLATED, TLB_HIT
+    global TLB_SIZE, NUM_PAGES, PAGE_SIZE,PAGE_TABLE_SIZE,FRAME_COUNTER,TLB_COUNTER,TLB_MISS,PAGE_TABLE_MISS,ADDS_TRANSLATED,TLB_HIT, CURRENT_INDEX
     
     parse_args()
 
@@ -168,10 +222,17 @@ def main():
 
                 FRAME_COUNTER+=1 
                      
-            else:
+            else:        
                 if DEFAULT_PRA == 'fifo':
                     new_frame = fifo_page_table(PAGE_TABLE, TLB, page_num)
                     PAGE_TO_FRAME_DICT[page_num] = new_frame
+                elif DEFAULT_PRA == 'optimal':
+                    new_frame = optimal(PAGE_TABLE, TLB, page_num)
+                    PAGE_TO_FRAME_DICT[page_num] = new_frame
+                elif DEFAULT_PRA == 'lru':
+                    new_frame = lru(PAGE_TABLE, TLB, page_num)
+                    PAGE_TO_FRAME_DICT[page_num] = new_frame
+                    
                     
             if TLB_COUNTER<TLB_SIZE:
                     TLB.append((page_num,new_frame))
