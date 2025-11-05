@@ -66,8 +66,6 @@ def optimal(queue_page_table, queue_tlb, page_num):
     global CURRENT_INDEX
     print("hhi")
 
-    page_table_keys = [page for page, frame in queue_page_table]
-
     farthest_use = -1
     page_to_replace = None
 
