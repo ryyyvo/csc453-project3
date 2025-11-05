@@ -44,12 +44,11 @@ def optimal(queue_page_table, queue_tlb, page_num):
     
     page_table_keys = [page for page, frame in queue_page_table]
     
-    # find which page to replace 
     farthest_use = -1
     page_to_replace = None
     
     for page, frame in queue_page_table:
-        # look for the next occurrence of this page
+        # look for next occurrence of this page
         next_use = None
         for i in range(CURRENT_INDEX + 1, len(SEQ)):
             if SEQ[i] == page:
@@ -61,7 +60,7 @@ def optimal(queue_page_table, queue_tlb, page_num):
             page_to_replace = (page, frame)
             break
         
-        # track the page that will be used farthest in the future
+        # track page that will be used farthest in the future
         if next_use > farthest_use:
             farthest_use = next_use
             page_to_replace = (page, frame)
@@ -72,6 +71,34 @@ def optimal(queue_page_table, queue_tlb, page_num):
     
     new_frame_num = page_to_replace[1]
 
+    queue_page_table.append((page_num, new_frame_num))
+    
+    return new_frame_num
+
+def lru(queue_page_table, queue_tlb, page_num):
+    global CURRENT_INDEX
+    
+    least_recent_use = CURRENT_INDEX
+    page_to_replace = None
+    
+    for page, frame in queue_page_table:
+        last_use = -1
+        for i in range(CURRENT_INDEX - 1, -1, -1):
+            if SEQ[i] == page:
+                last_use = i
+                break
+
+        # track page that was used least recently
+        if last_use < least_recent_use:
+            least_recent_use = last_use
+            page_to_replace = (page, frame)
+    
+    queue_page_table.remove(page_to_replace)
+    if page_to_replace in queue_tlb:
+        queue_tlb.remove(page_to_replace)
+    
+    new_frame_num = page_to_replace[1]
+    
     queue_page_table.append((page_num, new_frame_num))
     
     return new_frame_num
@@ -119,7 +146,7 @@ def main():
     #parser = argparse.ArgumentParser(description='memSim')
 
     #args = parser.parse_args()
-    ADDS = [16916, 62493, 30198]
+    ADDS = [256, 512, 768, 1024, 1280, 1536, 256, 512, 1792, 768]
     #PAGE_TABLE = Queue()
     #TLB = Queue()
     
@@ -157,6 +184,8 @@ def main():
                     new_frame = fifo_page_table(PAGE_TABLE, TLB, page_num)
                 elif DEFAULT_PRA == 'optimal':
                     new_frame = optimal(PAGE_TABLE, TLB, page_num)
+                elif DEFAULT_PRA == 'lru':
+                    new_frame = lru(PAGE_TABLE, TLB, page_num)
               
                     
             if TLB_COUNTER<TLB_SIZE:
@@ -167,12 +196,6 @@ def main():
                     #call fifo on tlb
                     fifo_tlb(TLB, page_num, new_frame)
                     
-            
-            
-            
-    
-    print("TLB", TLB)
-    print("PAGE TABLE", PAGE_TABLE)
                 
                 #call DEFAULT_PRA
         #adds_translated+=1
