@@ -22,6 +22,7 @@ TLB_SIZE = 16
 NUM_PAGES = 256
 PAGE_SIZE = 256
 PAGE_TABLE_SIZE = 256
+TLB_HIT = 0
     
 FRAME_COUNTER = 0
 TLB_COUNTER=0
@@ -125,12 +126,12 @@ def read_byte_from_backing_store(address, page_num):
     with open("BACKING_STORE.bin", "rb") as f:
         f.seek(address)
         data = f.read(1)
-    return(int.from_bytes(data, 'big'))
+    return(int.from_bytes(data, 'big',signed=True))
 
 
 
 def main():
-    global TLB_SIZE, NUM_PAGES, PAGE_SIZE,PAGE_TABLE_SIZE,FRAME_COUNTER,TLB_COUNTER,TLB_MISS,PAGE_TABLE_MISS,ADDS_TRANSLATED
+    global TLB_SIZE, NUM_PAGES, PAGE_SIZE,PAGE_TABLE_SIZE,FRAME_COUNTER,TLB_COUNTER,TLB_MISS,PAGE_TABLE_MISS,ADDS_TRANSLATED, TLB_HIT
     
     parse_args()
 
@@ -149,6 +150,8 @@ def main():
     
     for address in ADDS:
         page_num, offset = get_page_and_offset(address)
+        if check_page_exist(TLB, page_num):
+                TLB_HIT += 1
         if not check_page_exist(TLB, page_num):
             if check_page_exist(PAGE_TABLE, page_num):
                 TLB_MISS+=1
@@ -157,6 +160,7 @@ def main():
             
         if not check_page_exist(TLB, page_num) and not check_page_exist(PAGE_TABLE, page_num):
             PAGE_TABLE_MISS += 1
+            TLB_MISS += 1
             if FRAME_COUNTER<DEFAULT_FRAMES:
                 PAGE_TABLE.append((page_num, FRAME_COUNTER))
                 new_frame = FRAME_COUNTER
@@ -176,6 +180,7 @@ def main():
             else:
                     #call fifo on tlb
                     fifo_tlb(TLB, page_num, new_frame)
+        ADDS_TRANSLATED+=1
                     
             
             
@@ -196,14 +201,13 @@ def main():
     
     print("Number of Translated Addresses = ", ADDS_TRANSLATED)
     print("Page Faults = ", PAGE_TABLE_MISS)
-    print("Page Fault Rate = ??")
-    print("TLB Hits = ??")
+    print("Page Fault Rate = ", PAGE_TABLE_MISS/ADDS_TRANSLATED)
+    print("TLB Hits = ", TLB_HIT)
     print("TLB Misses = ", TLB_MISS)
-    print("TLB Hit Rate = ??")
+    print("TLB Hit Rate = ", TLB_HIT/ADDS_TRANSLATED)
     
 
     return 0
-
 
 
 if __name__ == "__main__":
