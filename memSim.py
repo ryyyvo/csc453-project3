@@ -155,13 +155,7 @@ def parse_args():
     print("pra", DEFAULT_PRA)
     print("adds", ADDS)
 
-    # open file name, store it as an array in ref_seq
-    # default_frames = second arg
-    # DEFALT_pra = third arg
-    # return ()
-    # else if len ==2 :
-    # check if second arg is num => set default frames
-    # if not num, set pra
+ 
     return 0
 
 
