@@ -201,7 +201,7 @@ def main():
                 frame_from_table = get_frame_from_queue(PAGE_TABLE, page_num)
                 TLB.append(page_num, frame_from_table)
 
-        if not check_page_exist(TLB, page_num) and not check_page_exist(PAGE_TABLE, page_num):
+        else if not check_page_exist(TLB, page_num) and not check_page_exist(PAGE_TABLE, page_num):
             PAGE_TABLE_MISS += 1
             TLB_MISS += 1
             if FRAME_COUNTER < DEFAULT_FRAMES:
