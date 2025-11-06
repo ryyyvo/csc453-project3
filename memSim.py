@@ -248,8 +248,8 @@ def main():
     print("TLB Misses = ", TLB_MISS)
     print("TLB Hit Rate = ", TLB_HIT/ADDS_TRANSLATED)
 
-    print("-----")
-    print(PAGE_TO_FRAME_DICT)
+    #print("-----")
+    #print(PAGE_TO_FRAME_DICT)
     return 0
 
 
