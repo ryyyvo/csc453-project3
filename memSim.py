@@ -58,10 +58,8 @@ def fifo_page_table(queue_page_table, queue_tlb, page_num):
 
 
 def optimal(queue_page_table, queue_tlb, page_num):
-    global LAST_DEFAULT_FRAME_USED
     global CURRENT_INDEX
-    print("hhi")
-
+    
     farthest_use = -1
     page_to_replace = None
 
@@ -88,12 +86,6 @@ def optimal(queue_page_table, queue_tlb, page_num):
         queue_tlb.remove(page_to_replace)
 
     new_frame_num = page_to_replace[1]
-    if new_frame_num == LAST_DEFAULT_FRAME_USED:
-        if (new_frame_num + 1) > DEFAULT_FRAMES:
-            new_frame_num = 0
-        else:
-            new_frame_num += 1
-    LAST_DEFAULT_FRAME_USED = new_frame_num
 
     queue_page_table.append((page_num, new_frame_num))
 
@@ -197,7 +189,8 @@ def main():
 
     print("sequence page numbers", SEQ)
 
-    for address in ADDS:
+    for idx, address in enumerate(ADDS):
+        CURRENT_INDEX = idx
         page_num, offset = get_page_and_offset(address)
         if check_page_exist(TLB, page_num):
             TLB_HIT += 1
