@@ -3,7 +3,7 @@ import sys
 
 ADDS = []  # addresses from file
 SEQ = []  # all of them translated to their page number
-CURRENT_INDEX = 0  # tracks current position in SEQ for optimal algorithm
+CURRENT_INDEX = 0  # tracks current position in SEQ for PRA's
 
 DEFAULT_FRAMES = 256
 DEFAULT_PRA = 'fifo'
@@ -20,12 +20,6 @@ TLB_MISS = 0
 PAGE_TABLE_MISS = 0
 ADDS_TRANSLATED = 0
 LAST_DEFAULT_FRAME_USED = -1
-
-
-# tlb will be a queue of dictionaries
-
-# page number to frame number
-
 
 def get_frame_from_queue(queue, key):
     for k, v in queue:
@@ -137,7 +131,6 @@ def parse_args():
         DEFAULT_PRA = str(sys.argv[3])
 
     elif len(sys.argv) == 3:
-        # if isinstance(sys.argv[2],int):
         if sys.argv[2].isdigit():
             DEFAULT_FRAMES = int(sys.argv[2])
         else:
@@ -147,13 +140,6 @@ def parse_args():
     print("pra", DEFAULT_PRA)
     print("adds", ADDS)
 
-    # open file name, store it as an array in ref_seq
-    # default_frames = second arg
-    # DEFALT_pra = third arg
-    # return ()
-    # else if len ==2 :
-    # check if second arg is num => set default frames
-    # if not num, set pra
     return 0
 
 
